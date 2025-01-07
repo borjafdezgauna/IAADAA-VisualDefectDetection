@@ -7,11 +7,20 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score, balanced_accuracy_score
 
 from utils.constants import NEG_CLASS
+import os
+
+def create_dir(directory_name):
+    try:
+        os.mkdir(directory_name)
+    except FileExistsError:
+        print(f"Directory '{directory_name}' already exists.")
+    except PermissionError:
+        print(f"Permission denied: Unable to create '{directory_name}'.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
-def train(
-    dataloader, model, optimizer, criterion, epochs, device, target_accuracy=None
-):
+def train(dataloader, model, optimizer, criterion, epochs, device, target_accuracy=None):
     """
     Script to train a model. Returns trained model.
     """
@@ -51,7 +60,7 @@ def train(
     return model
 
 
-def evaluate(model, dataloader, device):
+def evaluate(model, dataloader, device, output_image):
     """
     Script to evaluate a model after training.
     Outputs accuracy and balanced accuracy, draws confusion matrix.
@@ -83,10 +92,10 @@ def evaluate(model, dataloader, device):
     print("Accuracy: {:.4f}".format(accuracy))
     print("Balanced Accuracy: {:.4f}".format(balanced_accuracy))
     print()
-    plot_confusion_matrix(y_true, y_pred, class_names=class_names)
+    plot_confusion_matrix(y_true, y_pred, output_image, class_names=class_names)
 
 
-def plot_confusion_matrix(y_true, y_pred, class_names="auto"):
+def plot_confusion_matrix(y_true, y_pred, output_image, class_names="auto"):
     confusion = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=[5, 5])
     sns.heatmap(
@@ -100,7 +109,7 @@ def plot_confusion_matrix(y_true, y_pred, class_names="auto"):
     plt.ylabel("True labels")
     plt.xlabel("Predicted labels")
     plt.title("Confusion Matrix")
-    plt.show()
+    plt.savefig(output_image)
     
     
 def get_bbox_from_heatmap(heatmap, thres=0.8):

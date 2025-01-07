@@ -18,7 +18,7 @@ class CustomVGG(nn.Module):
 
     def __init__(self, n_classes=2):
         super(CustomVGG, self).__init__()
-        self.feature_extractor = models.vgg16(pretrained=True).features[:-1]
+        self.feature_extractor = models.vgg16(weights='VGG16_Weights.DEFAULT').features[:-1]
         self.classification_head = nn.Sequential(
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.AvgPool2d(
