@@ -122,7 +122,7 @@ def cross_validation(data_folder= "data/mvtec_anomaly_detection", subset_name= "
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
-        print("Usage: python -m cnn <command> [parameters]")
+        print("Usage: python -m anomaly_detection <command> [parameters]")
     elif sys.argv[1] == 'train':
         train_model()
     elif sys.argv[1] == 'cross-validation':
@@ -130,10 +130,10 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'predict':
         if len(sys.argv) <= 3:
             print("To run prediction, the model and the image need to be passed as arguments")
-            print("Example python -m cnn predict <path_to_model> <path_to_iamge>")
+            print("Example python -m anomaly_detection predict <path_to_model> <path_to_iamge>")
             exit()
         
         predict(sys.argv[2], sys.argv[3])
     else:
         print("Unknown command. Valid commands are 'train', 'cross-validation' and 'predict'")
-        print("Usage: python -m cnn [command]")
+        print("Usage: python -m anomaly_detection [command]")

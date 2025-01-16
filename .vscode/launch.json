@@ -9,7 +9,7 @@
             "name": "Train model",
             "type": "debugpy",
             "request": "launch",
-            "module": "cnn",
+            "module": "anomaly_detection",
             "args": ["train"],
             "console": "integratedTerminal"
         },
@@ -17,7 +17,7 @@
             "name": "Prediction test: defect",
             "type": "debugpy",
             "request": "launch",
-            "module": "cnn",
+            "module": "anomaly_detection",
             "args": ["predict", "weights/leather_model.h5", "data/mvtec_anomaly_detection/leather/test/cut/001.png"],
             "console": "integratedTerminal"
         },
@@ -25,7 +25,7 @@
             "name": "Prediction test: no defect",
             "type": "debugpy",
             "request": "launch",
-            "module": "cnn",
+            "module": "anomaly_detection",
             "args": ["predict", "weights/leather_model.h5", "data/mvtec_anomaly_detection/leather/train/good/000.png"],
             "console": "integratedTerminal"
         }
