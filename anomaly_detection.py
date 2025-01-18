@@ -7,9 +7,9 @@ import torch.nn as nn
 import torch.optim as optim
 
 from utils.dataloader import get_train_test_loaders, get_cv_train_test_loaders
-from utils.model import CustomVGG
+from utils.model import AnomalyLocationDetector
 from utils.helper import train, evaluate, predict_localize, create_dir, get_bbox_from_heatmap
-from utils.constants import (NEG_CLASS,INPUT_IMG_SIZE)
+from utils.constants import INPUT_IMG_SIZE
 
 def predict(model_path = "weights/leather_model.h5", image_path = "data/mvtec_anomaly_detection/leather/test/cut/004.png"):
     from PIL import Image
@@ -24,16 +24,17 @@ def predict(model_path = "weights/leather_model.h5", image_path = "data/mvtec_an
     image = transformation(image)
     image = torch.unsqueeze(image, 0)
         
-    model = CustomVGG()
+    model = AnomalyLocationDetector()
  
     #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.load_state_dict(torch.load(model_path, weights_only=True))# = torch.load(model_path, map_location=device)
     model.eval()
     probs, heatmap = model(image)
-    x0,y0,x1,y1 = get_bbox_from_heatmap(heatmap[0][NEG_CLASS].detach().numpy())
+    x0,y0,x1,y1 = get_bbox_from_heatmap(heatmap[0][0].detach().numpy())
 
-    noDefectPro = probs[0][0].item()
-    defectProb = probs[0][1].item()
+    defectProb = probs[0][0].item()
+    noDefectPro = probs[0][1].item()
+    
     if defectProb > noDefectPro:
         print(f"Defect detected at: [{x0},{y0},{x1},{y1}]")
     else:
@@ -49,7 +50,7 @@ def train_model(data_folder= "data/mvtec_anomaly_detection", subset_name= "leath
     target_train_accuracy = 0.98
     lr = 0.0001
     epochs = 10
-    class_weight = [1, 3] if NEG_CLASS == 1 else [3, 1]
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     heatmap_thres = 0.7
@@ -59,8 +60,9 @@ def train_model(data_folder= "data/mvtec_anomaly_detection", subset_name= "leath
     train_loader, test_loader = get_train_test_loaders(root=data_folder, batch_size=batch_size, test_size=0.2, random_state=42)
     
     
-    model = CustomVGG()
+    model = AnomalyLocationDetector()
     
+    class_weight = [1, 3]
     class_weight = torch.tensor(class_weight).type(torch.FloatTensor).to(device)
     criterion = nn.CrossEntropyLoss(weight=class_weight)
     optimizer = optim.Adam(model.parameters(), lr=lr)
@@ -85,7 +87,7 @@ def cross_validation(data_folder= "data/mvtec_anomaly_detection", subset_name= "
     target_train_accuracy = 0.98
     lr = 0.0001
     epochs = 10
-    class_weight = [1, 3] if NEG_CLASS == 1 else [3, 1]
+    class_weight = [1, 3]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     heatmap_thres = 0.7
@@ -94,7 +96,7 @@ def cross_validation(data_folder= "data/mvtec_anomaly_detection", subset_name= "
     train_loader, test_loader = get_train_test_loaders(root=data_folder, batch_size=batch_size, test_size=0.2, random_state=42)
     
     
-    model = CustomVGG()
+    model = AnomalyLocationDetector()
     
     class_weight = torch.tensor(class_weight).type(torch.FloatTensor).to(device)
     criterion = nn.CrossEntropyLoss(weight=class_weight)
@@ -110,7 +112,7 @@ def cross_validation(data_folder= "data/mvtec_anomaly_detection", subset_name= "
     
     for i, (train_loader, test_loader) in enumerate(cv_folds):
         print(f"Fold {i+1}/{n_cv_folds}")
-        model = CustomVGG(2) #2 classes
+        model = AnomalyLocationDetector() #2 classes
         optimizer = optim.Adam(model.parameters(), lr=lr)
         model = train(train_loader, model, optimizer, criterion, epochs, device)
         output_image_path = f"output/{subset_name}_{i}_confusion_matrix.png"
@@ -124,7 +126,7 @@ if __name__ == '__main__':
     if len(sys.argv) <= 1:
         print("Usage: python -m anomaly_detection <command> [parameters]")
     elif sys.argv[1] == 'train':
-        train_model()
+        train_model("data/mvtec_anomaly_detection", "leather")
     elif sys.argv[1] == 'cross-validation':
         cross_validation()
     elif sys.argv[1] == 'predict':

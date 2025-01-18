@@ -6,13 +6,7 @@ from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 from torchvision import transforms
 from sklearn.model_selection import train_test_split, StratifiedKFold
 
-from utils.constants import (
-    GOOD_CLASS_FOLDER,
-    DATASET_SETS,
-    INPUT_IMG_SIZE,
-    IMG_FORMAT,
-    NEG_CLASS,
-)
+from utils.constants import (GOOD_CLASS_FOLDER, INPUT_IMG_SIZE)
 
 
 class MVTEC_AD_DATASET(Dataset):
@@ -24,42 +18,33 @@ class MVTEC_AD_DATASET(Dataset):
     """
 
     def __init__(self, root):
-        self.classes = ["Good", "Anomaly"] if NEG_CLASS == 1 else ["Anomaly", "Good"]
-        self.img_transform = transforms.Compose(
-            [transforms.Resize(INPUT_IMG_SIZE), transforms.ToTensor()]
-        )
+        self.classes = []
+        self.img_transform = transforms.Compose([transforms.Resize(INPUT_IMG_SIZE), transforms.ToTensor()])
 
-        (
-            self.img_filenames,
-            self.img_labels,
-            self.img_labels_detailed,
-        ) = self._get_images_and_labels(root)
+        self.img_filenames, self.img_labels, self.img_labels_detailed= self._get_images_and_labels(root)
 
     def _get_images_and_labels(self, root):
         image_names = []
         labels = []
         labels_detailed = []
+        label_id = 0
 
-        for folder in DATASET_SETS:
-            folder = os.path.join(root, folder)
+        for class_folder in os.listdir(root):
 
-            for class_folder in os.listdir(folder):
-                label = (
-                    1 - NEG_CLASS if class_folder == GOOD_CLASS_FOLDER else NEG_CLASS
-                )
-                label_detailed = class_folder
+            full_path_to_class_folder = os.path.join(root, class_folder)
+            if not os.path.isdir(full_path_to_class_folder):
+                continue
 
-                class_folder = os.path.join(folder, class_folder)
-                class_images = os.listdir(class_folder)
-                class_images = [
-                    os.path.join(class_folder, image)
-                    for image in class_images
-                    if image.find(IMG_FORMAT) > -1
-                ]
+            label_detailed = class_folder
 
-                image_names.extend(class_images)
-                labels.extend([label] * len(class_images))
-                labels_detailed.extend([label_detailed] * len(class_images))
+            class_images = os.listdir(full_path_to_class_folder)
+            class_images = [ os.path.join(full_path_to_class_folder, image)
+                    for image in class_images if image.lower().endswith(".png") ]
+
+            image_names.extend(class_images)
+            labels.extend([label_id] * len(class_images))
+            labels_detailed.extend([label_detailed] * len(class_images))
+            label_id = label_id + 1
 
         print(
             "Dataset {}: N Images = {}, Share of anomalies = {:.3f}".format(
@@ -74,7 +59,7 @@ class MVTEC_AD_DATASET(Dataset):
     def __getitem__(self, idx):
         img_fn = self.img_filenames[idx]
         label = self.img_labels[idx]
-        img = Image.open(img_fn)
+        img = Image.open(img_fn).convert('RGB')
         img = self.img_transform(img)
         label = torch.as_tensor(label, dtype=torch.long)
         return img, label

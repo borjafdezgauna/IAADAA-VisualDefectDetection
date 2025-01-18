@@ -6,7 +6,7 @@ from matplotlib.patches import Rectangle
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score, balanced_accuracy_score
 
-from utils.constants import NEG_CLASS
+
 import os
 
 def create_dir(directory_name):
@@ -163,7 +163,7 @@ def predict_localize(
             class_pred = class_preds[img_i]
             prob = probs[img_i]
             label = labels[img_i]
-            heatmap = feature_maps[img_i][NEG_CLASS].detach().numpy()
+            heatmap = feature_maps[img_i][0].detach().numpy()
 
             counter += 1
             plt.subplot(n_rows, n_cols, counter)
@@ -175,7 +175,7 @@ def predict_localize(
                 )
             )
 
-            if class_pred == NEG_CLASS:
+            if class_pred == 0:
                 x_0, y_0, x_1, y_1 = get_bbox_from_heatmap(heatmap, thres)
                 rectangle = Rectangle(
                     (x_0, y_0),

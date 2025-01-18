@@ -4,21 +4,21 @@ import torch.nn.functional as F
 from torchvision import models
 from utils.constants import INPUT_IMG_SIZE
 
-
-class CustomVGG(nn.Module):
+class AnomalyLocationDetector(nn.Module):
     """
     Custom multi-class classification model 
-    with VGG16 feature extractor, pretrained on ImageNet
-    and custom classification head.
+    with a pretrained feature extractor and a custom classification head.
     Parameters for the first convolutional blocks are freezed.
     
     Returns class scores when in train mode.
     Returns class probs and normalized feature maps when in eval mode.
     """
 
-    def __init__(self, n_classes=2):
-        super(CustomVGG, self).__init__()
+    def __init__(self):
+        super(AnomalyLocationDetector, self).__init__()
+        
         self.feature_extractor = models.vgg16(weights='VGG16_Weights.DEFAULT').features[:-1]
+
         self.classification_head = nn.Sequential(
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.AvgPool2d(
@@ -27,7 +27,7 @@ class CustomVGG(nn.Module):
             nn.Flatten(),
             nn.Linear(
                 in_features=self.feature_extractor[-2].out_channels,
-                out_features=n_classes,
+                out_features=2,
             ),
         )
         self._freeze_params()
