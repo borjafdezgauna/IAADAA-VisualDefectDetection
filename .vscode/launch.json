@@ -14,7 +14,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Prediction test: defect",
+            "name": "Defect detection test: defect",
             "type": "debugpy",
             "request": "launch",
             "module": "anomaly_detection",
@@ -22,11 +22,35 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "Prediction test: no defect",
+            "name": "Defect detection test: no defect",
             "type": "debugpy",
             "request": "launch",
             "module": "anomaly_detection",
             "args": ["predict", "weights/leather_model.h5", "data/mvtec_anomaly_detection/leather/good/000.png"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Resize image",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "process_image",
+            "args": ["resize", "data/mvtec_anomaly_detection/leather/bad/000.png", "resized_image.png", "500"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Rotate image",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "process_image",
+            "args": ["rotate", "data/mvtec_anomaly_detection/leather/bad/000.png", "rotated_image.png", "45"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Crop image",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "process_image",
+            "args": ["crop", "data/mvtec_anomaly_detection/leather/bad/000.png", "cropped_image.png", "64"],
             "console": "integratedTerminal"
         }
     ]

@@ -15,8 +15,6 @@ def predict(model_path = "weights/leather_model.h5", image_path = "data/mvtec_an
     from PIL import Image
     import torchvision.transforms
     
-    
-#    image = read_image(image_path)
     image = Image.open(image_path)
     transformation = torchvision.transforms.Compose(
             [torchvision.transforms.Resize(INPUT_IMG_SIZE), torchvision.transforms.ToTensor()]
