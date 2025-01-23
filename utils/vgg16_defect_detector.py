@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torchvision import models
 from utils.constants import INPUT_IMG_SIZE
 
-class AnomalyDetector(nn.Module):
+class VGGDefectDetector(nn.Module):
     """
     Custom multi-class classification model 
     with a pretrained feature extractor and a custom classification head.
@@ -15,7 +15,7 @@ class AnomalyDetector(nn.Module):
     """
 
     def __init__(self):
-        super(AnomalyDetector, self).__init__()
+        super(VGGDefectDetector, self).__init__()
         
         self.feature_extractor = models.vgg16(weights='VGG16_Weights.DEFAULT').features[:-1]
 
