@@ -6,10 +6,10 @@
     "configurations": [
 
         {
-            "name": "Train model",
+            "name": "Train Defect detector",
             "type": "debugpy",
             "request": "launch",
-            "module": "anomaly_detection",
+            "module": "defect_detection",
             "args": ["train"],
             "console": "integratedTerminal"
         },
@@ -17,7 +17,7 @@
             "name": "Defect detection test: defect",
             "type": "debugpy",
             "request": "launch",
-            "module": "anomaly_detection",
+            "module": "defect_detection",
             "args": ["predict", "weights/leather_model.h5", "data/mvtec_anomaly_detection/leather/bad/001.png"],
             "console": "integratedTerminal"
         },
@@ -25,8 +25,32 @@
             "name": "Defect detection test: no defect",
             "type": "debugpy",
             "request": "launch",
-            "module": "anomaly_detection",
+            "module": "defect_detection",
             "args": ["predict", "weights/leather_model.h5", "data/mvtec_anomaly_detection/leather/good/000.png"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Train Defect classifier",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "defect_classification",
+            "args": ["train"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Defect classification test: defect",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "defect_classification",
+            "args": ["predict", "weights/VGGDefectClassifier_leather.h5", "data/mvtec_anomaly_detection/leather/bad/001.png"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Defect classification test: no defect",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "defect_classification",
+            "args": ["predict", "weights/VGGDefectClassifier_leather.h5", "data/mvtec_anomaly_detection/leather/good/000.png"],
             "console": "integratedTerminal"
         },
         {
