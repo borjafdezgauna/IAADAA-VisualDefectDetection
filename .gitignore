@@ -1,8 +1,10 @@
-data/
+data/*
+!data/mvtec_anomaly_detection/
 .data/
 .ipynb_checkpoints/
 __pycache__/
 .DS_Store
+
 env/
 weights/
 output/
